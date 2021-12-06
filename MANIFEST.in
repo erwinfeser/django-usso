@@ -1,0 +1,5 @@
+include README.md
+include LICENSE.md
+recursive-include usso *.ico *.png *.css *.gif *.jpg *.txt *.js *.html *.xml
+global-exclude __pycache__
+global-exclude *.py[co]
