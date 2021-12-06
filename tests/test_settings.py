@@ -19,7 +19,8 @@ DATABASES = {
 }
 SECRET_KEY = "secret_key_for_testing"
 USSO_SETTINGS = {
-    'CLONE_GROUPS': True,
-    'AUTH_USER_FIELD': 'username',
     'USERS_DATABASE_NAME': 'users',
 }
+AUTHENTICATION_BACKENDS = [
+    'usso.authentication.UssoModelBackend',
+]
