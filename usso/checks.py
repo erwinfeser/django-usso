@@ -25,7 +25,7 @@ def usso_settings_check(app_configs, **kwargs):
             )
         )
 
-    users_database_name = getattr(usso_settings, 'USERS_DATABASE_NAME')
+    users_database_name = usso_settings.get('USERS_DATABASE_NAME')
 
     if not users_database_name:
         errors.append(
@@ -35,25 +35,26 @@ def usso_settings_check(app_configs, **kwargs):
                 obj=usso_settings,
             )
         )
+    else:
 
-    if not isinstance(users_database_name, str):
-        errors.append(
-            Error(
-                'USERS_DATABASE_NAME is not a string',
-                hint='Please define USERS_DATABASE_NAME as a valid string.',
-                obj=usso_settings,
+        if not isinstance(users_database_name, str):
+            errors.append(
+                Error(
+                    f'"{users_database_name}" is not a string',
+                    hint='Please define USERS_DATABASE_NAME as a valid string.',
+                    obj=users_database_name,
+                )
             )
-        )
 
-    databases = getattr(settings, 'DATABASES', {})
+        databases = getattr(settings, 'DATABASES', {})
 
-    if not databases.get(users_database_name):
-        errors.append(
-            Error(
-                f'"{users_database_name}" not found in DATABASES settings',
-                hint=f'Please add {users_database_name} to DATABASES settings.',
-                obj=settings,
+        if not databases.get(users_database_name):
+            errors.append(
+                Error(
+                    f'"{users_database_name}" not found in DATABASES settings',
+                    hint=f'Please add "{users_database_name}" to DATABASES settings.',
+                    obj=settings,
+                )
             )
-        )
 
     return errors
