@@ -1,5 +1,6 @@
 include README.md
 include LICENSE.md
 recursive-include usso *.ico *.png *.css *.gif *.jpg *.txt *.js *.html *.xml
+recursive-include usso/migrations *.py
 global-exclude __pycache__
 global-exclude *.py[co]

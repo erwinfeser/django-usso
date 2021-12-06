@@ -10,7 +10,7 @@ def read(f):
 
 setup(
     name='django-usso',
-    version='0.1',
+    version='0.2',
     packages=['usso'],
     description='(ugly) single sign-on for django projects',
     long_description=read('README.md'),
