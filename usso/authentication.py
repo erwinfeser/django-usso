@@ -51,15 +51,32 @@ WHERE UPPER(auth_user.{AUTH_USER_FIELD}::text) = UPPER(%s)
 USER_MODEL = get_user_model()
 
 
-def clone_groups(user, cursor):
-    cursor.execute(SELECT_GROUPS_SQL, [getattr(user, AUTH_USER_FIELD)])
-    group_names = [r[NAME] for r in cursor.fetchall()]
-    for group_name in group_names:
-        group, _ = Group.objects.get_or_create(name=group_name)
-        user.groups.add(group)
-
-
 class UssoModelBackend(ModelBackend):
+    def update_user_data(self, user, row):
+        user.set_unusable_password()
+        email = row[EMAIL]
+        if email:
+            user.email = email.lower()
+        user.first_name = row[FIRST_NAME]
+        user.last_name = row[LAST_NAME]
+        user.is_staff = row[IS_STAFF]
+        user.is_superuser = row[IS_SUPERUSER]
+        user.is_active = True
+        user.save()
+        user.refresh_from_db()
+        user.usso.external_id = row[EXTERNAL_ID]
+        user.usso.save()
+
+    def clone_groups(self, user, cursor):
+        cursor.execute(SELECT_GROUPS_SQL, [getattr(user, AUTH_USER_FIELD)])
+        group_names = set([r[NAME] for r in cursor.fetchall()])
+        already_created_group_names = set(Group.objects.filter(name__in=group_names).values_list('name', flat=True))
+
+        for group_name in list(group_names.difference(already_created_group_names)):
+            group, _ = Group.objects.get_or_create(name=group_name)
+
+        user.groups.add(*Group.objects.filter(name__in=group_names))
+
     def authenticate(self, request, username=None, password=None, **kwargs):
         if username and password:
             conn = connections[USERS_DATABASE_NAME]
@@ -70,22 +87,9 @@ class UssoModelBackend(ModelBackend):
                 if row and row[IS_ACTIVE] and check_password(password, row[PASSWORD]):
                     user, _ = USER_MODEL.objects.get_or_create(
                         username=row[USERNAME])
-                    user.set_unusable_password()
-                    email = row[EMAIL]
-                    if email:
-                        user.email = email.lower()
-                    user.first_name = row[FIRST_NAME]
-                    user.last_name = row[LAST_NAME]
-                    user.is_staff = row[IS_STAFF]
-                    user.is_superuser = row[IS_SUPERUSER]
-                    user.is_active = True
-                    user.save()
-                    user.refresh_from_db()
-                    user.usso.external_id = row[EXTERNAL_ID]
-                    user.usso.save()
+                    self.update_user_data(user, row)
                     if CLONE_GROUPS:
-                        clone_groups(user, cursor)
+                        self.clone_groups(user, cursor)
                     return user
             except Exception as exc:
                 LOGGER.error(exc)
-
