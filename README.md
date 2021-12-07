@@ -13,13 +13,13 @@ So I have an easy (and ugly) solution for you! I say it is ugly because it is us
 ## Installation:
 1. Add `usso` to your `INSTALLED_APPS`
 2. Define `AUTHENTICATION_BACKENDS` in `settings`:
-```
+```python
 AUTHENTICATION_BACKENDS = [
     'usso.authentication.UssoModelBackend',
 ]
 ```
 3. Modify your `DATABASES` dictionary by adding a new connection for users. It has to be a connection to another django project database. We will use it as source of users and groups! For instance:
-```
+```python
 DATABASES = {
     'default': {
         'ENGINE': 'django.db.backends.postgresql_psycopg2',
@@ -40,7 +40,7 @@ DATABASES = {
 }
 ```
 4. Add `USSO_SETTINGS` to your `settings`:
-```
+```python
 USSO_SETTINGS = {
     'CLONE_GROUPS': True,  # It replicates external groups locally. Default True.
     'AUTH_USER_FIELD': 'username',  # It can be 'email' or 'username'. Default username.
