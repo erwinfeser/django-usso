@@ -18,7 +18,7 @@ AUTHENTICATION_BACKENDS = [
     'usso.authentication.UssoModelBackend',
 ]
 ```
-3. Modify your `DATABASES` dictionary by adding a new connection for users. It has to be a connection to another django project database. We will use it as source of users and groups!
+3. Modify your `DATABASES` dictionary by adding a new connection for users. It has to be a connection to another django project database. We will use it as source of users and groups! For instance:
 ```
 DATABASES = {
     'default': {
