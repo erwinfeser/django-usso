@@ -63,9 +63,6 @@ class UssoModelBackend(ModelBackend):
         user.is_superuser = row[IS_SUPERUSER]
         user.is_active = True
         user.save()
-        user.refresh_from_db()
-        user.usso.external_id = row[EXTERNAL_ID]
-        user.usso.save()
 
     def clone_groups(self, user, cursor):
         cursor.execute(SELECT_GROUPS_SQL, [getattr(user, AUTH_USER_FIELD)])
