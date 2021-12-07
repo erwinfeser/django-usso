@@ -44,6 +44,6 @@ DATABASES = {
 USSO_SETTINGS = {
     'CLONE_GROUPS': True,  # It replicates external groups locally. Default True.
     'AUTH_USER_FIELD': 'username',  # It can be 'email' or 'username'. Default username.
-    'USERS_DATABASE_NAME': 'users'  # The database name that you added to DATABASES
+    'USERS_DATABASE_NAME': 'users'  # The extra database name that you added to DATABASES
 }
 ```
